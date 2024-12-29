@@ -7,13 +7,14 @@ Part : <./data/ships/terran/base_part_terran.rules>/Part
 	EditorGroup = "Reactor1x1"
 
 	MaxHealth = (&Size/0)* (&Size/1) * 1000
-	BatteryPerSecond = 1
+	BatteryPerSecond = 0.5
+	TargetPrice = 10000
 
 	Resources
 	[
-		[steel, (&~/Part/Size/0) * (&~/Part/Size/1) * 8]
-		[coil, (&~/Part/BatteryPerSecond) * 32] // TODO: Calculate value more precisely
-		[enriched_uranium, (&~/Part/Components/BatteryStorage/MaxResources) / 1000]
+		[steel, (&~/Part/Size/0) * (&~/Part/Size/1) * 16] // 25 per
+		[enriched_uranium, (&~/Part/Components/BatteryStorage/MaxResources) / 1000] // 2000 per
+		[coil, ((&~/Part/TargetPrice) - (&../0/1) * 25 - (&../1/1) * 2000) / 100] // 100 per
 	]
 
 	TypeCategories = : ^/0/TypeCategories [reactor, provides_power]
