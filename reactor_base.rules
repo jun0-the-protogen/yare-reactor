@@ -1,0 +1,193 @@
+// Template for reactors. Currently not used due to the behavior of inheritances not being the desired one for this file.
+// NOTE: Missing reactor things - specify which
+Part : <./data/ships/terran/base_part_terran.rules>/Part
+{
+	Size = [0, 0]
+	Center = [(&../Size/0) / 2, (&../Size/1) / 2]
+
+	MaxHealth = (&Size/0)* (&Size/1) * 1000 // array language modding preprocessor when
+
+	BatteryPerSecond = 0
+
+	Resources
+	[
+		[steel, (&~/Part/Size/0) * (&~/Part/Size/1) * 8]
+		[coil, (&~/Part/BatteryPerSecond) * 32] // TODO: Calculate value more precisely
+		[enriched_uranium, (&~/Part/Components/BatteryStorage/MaxResources) / 1000]
+	]
+
+	TypeCategories = : ^/0/TypeCategories [reactor, provides_power]
+	ReceivableBuffs : ^/0/ReceivableBuffs [ElectronDebuff, ElectronNebula]
+
+	AIValueFactor = 5
+	SelectionPriority = 0
+
+	CreateUnderlyingWhenDestroyed = false
+
+	NameKey = "YareReactorPlaceholder"
+	IconNameKey = "YRPlaceholder"
+	DescriptionKey = "YareReactorPlaceholderDesc"
+
+	Components : ^/0/Components
+	{
+		// TODO: UIModeToggle
+
+
+		BatteryStorage
+		{
+			Type = ResourceStorage
+
+			ResourceType = battery
+			ExpectedResourceGenerationRate = { BaseValue = (&../../BatteryProducer/ToQuantity) / (&../../BatteryProducer/Interval); BuffType=ElectronDebuff; BuffMode=Multiply; }
+
+			MaxResources = 0
+			MaxResourcesPickUp = 0
+		}
+
+		BatteryProducer
+		{
+			Type = ResourceConverter
+
+			ToStorage = BatteryStorage
+			ToQuantity = 0
+			Interval = 1 / (&<./Data/cosmoteer.rules>/Simulation/PhysicsUpdatesPerSecond)
+		}
+
+		WireContact // TODO: make inactive when not in use!
+		{
+			Type = GridBuffProvider
+
+			// OperationalToggle =
+
+			BuffType = yar.E
+			IncludeInLightweightBlueprintUpdates = false
+
+			GridDistance = 1
+			AllowDiagonals = true
+		}
+
+		WireArea : WireContact
+		{
+			Type = CircleBuffProvider
+
+			// OperationalToggle =
+
+			BuffCenter = &~/Part/Center
+			BuffRadius = 5
+		}
+
+		WireWholeShip : WireContact
+		{
+			Type = WholeShipProvider // Why not WholeShipBuffProvider??????
+
+			// OperationalToggle = 
+		}
+
+		BatteryWires
+		{
+			Type = MultiResourceStorage
+
+			ResourceType = battery
+			ResourceStorages = [BatteryStorage]
+			ViaBuffs
+			{
+				OutgoingBuffProviders = [WireContact, WireArea, WireWholeShip]
+				ComponentIDs = [BatteryStorage, ExtendableBatteryStorage, RealBatteryStorage] // dont tell anyone this feeds boost thrusters!
+			}
+
+			AddMode = DistributeProportionallyByAvailable
+			CycleStorageOnAdd = true
+
+			RemoveMode = DistributeProportionallyByCapacity
+			CycleStorageOnRemove = true
+		}
+
+		DestroyedEffects
+		{
+			Type = DeathEffects
+			Location = &~/Part/Center
+// TODO
+//			MediaEffects
+//			[
+//				&<particles/reactor_explode_small.rules>
+//				&<particles/reactor_explode_flash_small.rules>
+//				&<particles/reactor_shockwave_small.rules>
+//				&<./Data/common_effects/particles/explosions/med_part_explode_debris.rules>
+//				&<./Data/common_effects/particles/explosions/big_part_explode_smoke.rules>
+//
+//				: /BASE_SOUNDS/AudioExterior
+//				{
+//					Sound = "destroyed.wav"
+//					Volume = 1
+//					SpeedVariation = .25
+//				}
+//
+//				: /BASE_SHAKE
+//				{
+//					ShakeAmount = .25
+//					Duration = 2
+//				}
+//			]
+
+			HitEffects
+			[
+				{
+					Type = ExplosiveDamage
+					TotalDamage = 90000
+					Radius = 6
+					Delay = .05
+					ExpandDuration = .1
+					ExpandStartRadius = 2
+					ExpandLoss = 100%
+					FireChancePerNDamage = 50%
+					ImpulsePerNDamage = 10
+					NDamage = 1000
+					Filter
+					{
+						OperationalHealth = true
+						StructuralHealth = false
+						Friendlies = true
+					}
+				}
+				{
+					Type = ExplosiveDamage
+					TotalDamage = 20000
+					Radius = 4
+					Delay = .05
+					ExpandDuration = .05
+					ExpandStartRadius = 2
+					ExpandLoss = 100%
+					ImpulsePerNDamage = 5
+					NDamage = 1000
+					Filter
+					{
+						OperationalHealth = false
+						StructuralHealth = true
+						Friendlies = true
+					}
+				}
+			]
+		}
+
+		Graphics
+		{
+			Type = Graphics
+
+			Location = &~/Part/Center
+		}
+
+		Blueprints
+		{
+			Type = BlueprintSprite
+			Size = &~/Part/Size
+		}
+	}
+
+	Stats
+	{
+		PowerGeneration = (&~/Part/Components/BatteryProducer/ToQuantity) / (&~/Part/Components/BatteryProducer/Interval) / 1000
+		BatterySize = (&~/Part/Components/BatteryStorage/MaxResourcesPickUp) / 1000
+		BatteryFillTime = 0
+		PowerCapacity = (&~/Part/Components/BatteryStorage/MaxResources) / 1000
+	}
+}

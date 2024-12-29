@@ -1,0 +1,43 @@
+PartToggles
+[
+	// Reactor Mode
+	{
+		ToggleID = "yare.reactor_mode"
+		Style = Popout
+		ShowInEditor = true
+		Choices
+		[
+			{
+				ChoiceID = "yare.reactor_mode_adj"
+				ButtonToolTipKey = "PartToggles/YareReactorModeAdjacent"
+				ButtonSprite
+				{
+					Texture
+					{
+						File = "reactor_mode_adj.png"
+						MipLevels = 2
+						SampleMode = Linear
+					}
+				}
+			}
+			{
+				ChoiceID = "yare.reactor_mode_area"
+				ButtonToolTipKey = "PartToggles/YareReactorModeArea"
+				ButtonSprite
+				{
+					Texture : ../../0/ButtonSprite/Texture
+					{File = "reactor_mode_area.png"}
+				}
+			}
+			{
+				ChoiceID = "yare.reactor_mode_whole"
+				ButtonToolTipKey = "PartToggles/YareReactorModeWhole"
+				ButtonSprite
+				{
+					Texture : ../../0/ButtonSprite/Texture
+					{File = "reactor_mode_whole.png"}
+				}
+			}
+		]
+	}
+]

@@ -1,0 +1,254 @@
+Part : <./data/ships/terran/base_part_terran.rules>/Part
+{
+	ID = yare.r_1_1x1
+
+	Size = [1, 1]
+	Center = [(&../Size/0) / 2, (&../Size/1) / 2]
+	EditorGroup = "Reactor1x1"
+
+	MaxHealth = (&Size/0)* (&Size/1) * 1000
+	BatteryPerSecond = 1
+
+	Resources
+	[
+		[steel, (&~/Part/Size/0) * (&~/Part/Size/1) * 8]
+		[coil, (&~/Part/BatteryPerSecond) * 32] // TODO: Calculate value more precisely
+		[enriched_uranium, (&~/Part/Components/BatteryStorage/MaxResources) / 1000]
+	]
+
+	TypeCategories = : ^/0/TypeCategories [reactor, provides_power]
+	ReceivableBuffs : ^/0/ReceivableBuffs [ElectronDebuff, ElectronNebula]
+
+	AIValueFactor = 5
+	SelectionPriority = 0
+
+	CreateUnderlyingWhenDestroyed = false
+
+	NameKey = "Parts/YareReactorI"
+	IconNameKey = "Parts/YareReactor1x1Icon"
+	DescriptionKey = "Parts/YareReactor1x1Desc"
+	EditorIcon
+	{
+		Texture
+		{
+			File = "assets/icon.png"
+			SampleMode = "Linear"
+		}
+	}
+
+	Components : ^/0/Components
+	{
+		ModeAdjToggle
+		{
+			Type = UIToggle
+			ToggleID = "yare.reactor_mode"
+			Default = 0
+			RequiresCommand = false
+			ToggledOnChoices = [0]
+		}
+
+		ModeAreaToggle
+		{
+			Type = ModeToggle
+			Mode = ModeAdjToggle
+			OnMode = 1
+		}
+
+		ModeWholeToggle : ModeAreaToggle {OnMode = 2}
+
+
+		BatteryStorage
+		{
+			Type = ResourceStorage
+
+			ResourceType = battery
+			ExpectedResourceGenerationRate = { BaseValue = (&../../BatteryProducer/ToQuantity/BaseValue) / (&../../BatteryProducer/Interval); BuffType=ElectronDebuff; BuffMode=Multiply; }
+
+			SuppliesResources = true
+
+			MaxResources = 2000
+			StartingResources = &MaxResources
+
+			MinResourcesPickUp = 1
+			MaxResourcesPickUp = 1000
+
+			ToggleOnResources = 501
+			ToggleOffResources = 500
+		}
+
+		BatteryProducer
+		{
+			Type = ResourceConverter
+
+			ToStorage = BatteryWires
+			ToQuantity = { BaseValue = ceil((&~/Part/BatteryPerSecond) * 1000 * (&../Interval)); BuffType=ElectronDebuff; BuffMode=Divide; } // Free energy probably!
+			Interval = 1 / (&<./Data/cosmoteer.rules>/Simulation/PhysicsUpdatesPerSecond)
+		}
+
+		WireContact
+		{
+			Type = GridBuffProvider
+
+			OperationalToggle = ModeAdjToggle
+
+			BuffType = yar.E
+			IncludeInLightweightBlueprintUpdates = false
+
+			GridDistance = 1
+			AllowDiagonals = true
+
+			// FIXME: Category criterias
+		}
+
+		WireArea : WireContact
+		{
+			Type = CircleBuffProvider
+
+			OperationalToggle = ModeAreaToggle
+
+			BuffCenter = &~/Part/Center
+			BuffRadius = 5
+		}
+
+		WireWholeShip : WireContact
+		{
+			Type = WholeShipProvider // Why not WholeShipBuffProvider??????
+
+			OperationalToggle = ModeWholeToggle
+		}
+
+		BatteryWires
+		{
+			Type = MultiResourceStorage
+
+			ResourceType = battery
+			ResourceStorages = [BatteryStorage]
+			ViaBuffs
+			{
+				OutgoingBuffProviders = [WireContact, WireArea, WireWholeShip]
+				ComponentIDs = [BatteryStorage, ExtendableBatteryStorage, RealBatteryStorage] // dont tell anyone this feeds boost thrusters!
+			}
+
+			AddMode = DistributeProportionallyByAvailable
+			CycleStorageOnAdd = true
+
+			RemoveMode = DistributeProportionallyByCapacity
+			CycleStorageOnRemove = true
+		}
+
+		DestroyedEffects : <./Data/ships/terran/reactor_small/reactor_small.rules>/Part/Components/DestroyedEffects
+		{
+			Location = &~/Part/Center
+
+			// TODO: balance explosion
+			HitEffects
+			[
+				{
+					Type = ExplosiveDamage
+					TotalDamage = 90000
+					Radius = 6
+					Delay = .05
+					ExpandDuration = .1
+					ExpandStartRadius = 2
+					ExpandLoss = 100%
+					FireChancePerNDamage = 50%
+					ImpulsePerNDamage = 10
+					NDamage = 1000
+					Filter
+					{
+						OperationalHealth = true
+						StructuralHealth = false
+						Friendlies = true
+					}
+				}
+				{
+					Type = ExplosiveDamage
+					TotalDamage = 20000
+					Radius = 4
+					Delay = .05
+					ExpandDuration = .05
+					ExpandStartRadius = 2
+					ExpandLoss = 100%
+					ImpulsePerNDamage = 5
+					NDamage = 1000
+					Filter
+					{
+						OperationalHealth = false
+						StructuralHealth = true
+						Friendlies = true
+					}
+				}
+			]
+		}
+
+		Graphics : <./Data/ships/terran/corridor/corridor.rules>/Part/Components/Graphics
+		{
+			Type = Graphics
+
+			Location = &~/Part/Center
+			Floor
+			{
+				Layer = "floors"
+				DamageLevels
+				[
+					{
+						File = "assets/floors.png" // string concat when
+						Size = &~/Part/Size
+					}
+					:0 {File = "assets/floors_33.png"}
+					:0 {File = "assets/floors_66.png"}
+				]
+			}
+			Walls : Floor // inheritance for later!
+			{
+				Layer = "walls"
+				DamageLevels
+				[
+					: ../^/0/DamageLevels/0
+					{File = "assets/walls.png"}
+					:0 {File = "assets/walls_33.png"}
+					:0 {File = "assets/walls_66.png"}
+				]
+			}
+			Roof : ^/0/Roof {RandomUVRotation = false}
+		}
+
+		BatterySprites
+		{
+			Type = ResourceSprites
+
+			Location = &~/Part/Center
+			ResourceStorage = BatteryStorage
+			Round = Down
+
+			Layer = "doodads_high"
+			HasZeroResourceSprite = true
+
+			ResourceLevels
+			[
+				{
+					File = "assets/reactor0.png"
+					Size = &~/Part/Size
+				}
+				:0 {File = "assets/reactor1.png"}
+				:0 {File = "assets/reactor2.png"}
+			]
+		}
+
+		Blueprints
+		{
+			Type = BlueprintSprite
+
+			File = "assets/blueprints.png"
+			Size = &~/Part/Size
+		}
+	}
+
+	Stats
+	{
+		PowerGeneration = &~/Part/BatteryPerSecond
+		BatterySize = (&~/Part/Components/BatteryStorage/MaxResourcesPickUp) / 1000
+		BatteryFillTime = 0
+		PowerCapacity = (&~/Part/Components/BatteryStorage/MaxResources) / 1000
+	}
+}

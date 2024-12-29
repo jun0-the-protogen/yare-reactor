@@ -1,0 +1,97 @@
+ID = yare.reactors
+Name = "Yare's Reactors Mod"
+Author = "harana"
+
+Version = 1.0
+CompatibleGameVersions = ["0.28.0"]
+
+ModifiesMultiplayer = true
+
+Description = <bad>"WARNING: This mod is not balanced with vanilla."</bad>"\n\nYare's reactor mod adds tiered reactors of various sizes."
+StringsFolder = "strings"
+
+Actions
+[
+	{ // TODO: improve graphics
+		Action = Overrides
+
+		OverrideIn = "<gui/game/designer/editor_groups.rules>"
+		Overrides = &<editor_groups.rules>
+	}
+
+	:0
+	{
+		OverrideIn = "<buffs/buffs.rules>"
+		Overrides = &<buffs.rules>
+	}
+
+
+	{
+		Action = Add
+
+		AddTo = "<ships/terran/base_part_terran.rules>/Part/ReceivableBuffs"
+		ToAdd = yar.E
+	}
+
+	{
+		Action = AddMany
+
+		AddTo = "<gui/game/parts/part_toggles.rules>/PartToggles"
+		ManyToAdd = &<part_toggles.rules>/PartToggles
+	}
+
+	:3
+	{
+		AddTo = "<ships/terran/terran.rules>/Terran/Parts"
+		ManyToAdd
+		[
+			//1x1 reactors
+			&<1_1/t1.rules>/Part
+			//&<1_1/t2.rules>/Part
+			//&<1_1/t3.rules>/Part
+			//&<1_1/t4.rules>/Part
+			//&<1_1/t5.rules>/Part
+			//&<1_1/t6.rules>/Part
+			//&<1_1/t7.rules>/Part
+			//&<1_1/t8.rules>/Part
+			//&<1_1/t9.rules>/Part
+			//&<1_1/t10.rules>/Part
+			//
+			////2x1 reactors
+			//&<2_1/t1.rules>/Part
+			//&<2_1/t2.rules>/Part
+			//&<2_1/t3.rules>/Part
+			//&<2_1/t4.rules>/Part
+			//&<2_1/t5.rules>/Part
+			//&<2_1/t6.rules>/Part
+			//&<2_1/t7.rules>/Part
+			//&<2_1/t8.rules>/Part
+			//&<2_1/t9.rules>/Part
+			//&<2_1/t10.rules>/Part
+			//
+			////2x2 reactors
+			//&<2_2/t1.rules>/Part
+			//&<2_2/t2.rules>/Part
+			//&<2_2/t3.rules>/Part
+			//&<2_2/t4.rules>/Part
+			//&<2_2/t5.rules>/Part
+			//&<2_2/t6.rules>/Part
+			//&<2_2/t7.rules>/Part
+			//&<2_2/t8.rules>/Part
+			//&<2_2/t9.rules>/Part
+			//&<2_2/t10.rules>/Part
+		]
+	}
+
+// TODO
+//	{
+//		Action = Replace
+//		Replace = "<ammo/ammo.rules>/Ammo/1"
+//		With = &<ammo/ammo.rules>/Battery
+//	}
+]
+// So, you've downloaded our mod! ty :3!
+// Anyway, since you're reading the code....
+// If you plan on copying some ideas of this for your own use, please credit us (harana) when using this code.
+// We don't really mind, it's just modding tradition at this point.
+// Do note that blatant copies are prohibited without explicit permission.
