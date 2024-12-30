@@ -1,0 +1,63 @@
+Part : <t1.rules>/Part
+{
+	ID = yare.r_3_1x1
+
+	BatteryPerSecond = (&~/Part/^/0/BatteryPerSecond) * 4
+	TargetPrice = (&~/Part/^/0/TargetPrice) * 4
+
+	Resources
+	[
+		[steel, (&../../^/0/Resources/0/1) * 4] // Consider some tristeel?
+		[tristeel, 5] // 200 per
+		[enriched_uranium, (&../../^/0/Resources/1/1) * 4]
+		[coil, floor(((&~/Part/TargetPrice) - (&../0/1) * 25 - (&../1/1) * 200 - (&../2/1) * 2000) /2 / 100) @& @~1] // 100 per
+		[coil2, ceil(((&~/Part/TargetPrice) - (&../0/1) * 25 - (&../1/1) * 200 - (&../2/1) * 2000) /2 / 300)] // 300 per
+	]
+
+	Components : ^/0/Components
+	{
+		BatteryStorage : ^/0/BatteryStorage
+		{
+			ExpectedResourceGenerationRate = { BaseValue = (&../../BatteryProducer/^/0/ToQuantity/BaseValue) / (&../../BatteryProducer/^/0/Interval); BuffType=ElectronDebuff; BuffMode=Multiply; }
+
+			MaxResources = (&^/0/MaxResources) * 4
+			StartingResources = &MaxResources
+
+			MaxResourcesPickUp = (&^/0/MaxResourcesPickUp)
+		}
+
+		BatteryProducer : ^/0/BatteryProducer
+		{
+			ToQuantity = { BaseValue = ceil((&~/Part/BatteryPerSecond) * 1000 * (&../Interval)); BuffType=ElectronDebuff; BuffMode=Divide; } // Free energy probably!
+		}
+
+		DestroyedEffects : ^/0/DestroyedEffects
+		{
+			// TODO: balance explosion
+			HitEffects : ^/0/HitEffects
+			[
+				: ^/0/0
+				{
+					TotalDamage = 90000
+					Radius = 6
+				}
+				: ^/0/1
+				{
+					TotalDamage = 20000
+					Radius = 4
+				}
+			]
+		}
+
+		Graphics : ^/0/Graphics
+		{} // NOTE: Potential changes for later?
+	}
+
+	Stats
+	{
+		PowerGeneration = &~/Part/BatteryPerSecond
+		BatterySize = (&~/Part/Components/BatteryStorage/MaxResourcesPickUp) / 1000
+		BatteryFillTime = 0
+		PowerCapacity = (&~/Part/Components/BatteryStorage/MaxResources) / 1000
+	}
+}
