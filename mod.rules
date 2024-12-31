@@ -25,7 +25,6 @@ Actions
 		Overrides = &<buffs.rules>
 	}
 
-
 	{
 		Action = Add
 
@@ -83,12 +82,11 @@ Actions
 		]
 	}
 
-// TODO
-//	{
-//		Action = Replace
-//		Replace = "<ammo/ammo.rules>/Ammo/1"
-//		With = &<ammo/ammo.rules>/Battery
-//	}
+	{
+		Action = Replace
+		Replace = "<resources/battery/battery.rules>/MaxPerNugget"
+		With = 64000
+	}
 ]
 // So, you've downloaded our mod! ty :3!
 // Anyway, since you're reading the code....
