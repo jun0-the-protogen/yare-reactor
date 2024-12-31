@@ -18,7 +18,7 @@ Part : <./data/ships/terran/base_part_terran.rules>/Part
 	]
 
 	TypeCategories = : ^/0/TypeCategories [reactor, provides_power]
-	ReceivableBuffs : ^/0/ReceivableBuffs [ElectronDebuff, ElectronNebula]
+	ReceivableBuffs : ^/0/ReceivableBuffs [ElectronDebuff, ElectronNebula, yare.reactor_production_bonus]
 
 	AIValueFactor = 5
 	SelectionPriority = 0
@@ -48,6 +48,17 @@ Part : <./data/ships/terran/base_part_terran.rules>/Part
 			ToggledOnChoices = [0]
 		}
 
+		ModeAdjBoostBuffProvider
+		{
+			Type = SelfBuffProvider
+
+			BuffType = yare.reactor_production_bonus
+			OperationalToggle = ModeAdjToggle
+
+			ChainsFromBuffType = ElectronDebuff
+			BuffAmount = { BaseValue = 125%; BuffType = ElectronDebuff; BuffMode = Multiply; }
+		}
+
 		ModeAreaToggle
 		{
 			Type = ModeToggle
@@ -57,13 +68,19 @@ Part : <./data/ships/terran/base_part_terran.rules>/Part
 
 		ModeWholeToggle : ModeAreaToggle {OnMode = 2}
 
+		ModeWholeNerfProvider : ModeAdjBoostBuffProvider
+		{
+			OperationalToggle = ModeWholeToggle
+
+			BuffAmount : ^/0/BuffAmount { BaseValue = 75% }
+		}
 
 		BatteryStorage
 		{
 			Type = ResourceStorage
 
 			ResourceType = battery
-			ExpectedResourceGenerationRate = { BaseValue = (&../../BatteryProducer/ToQuantity/BaseValue) / (&../../BatteryProducer/Interval); BuffType=ElectronDebuff; BuffMode=Multiply; }
+			ExpectedResourceGenerationRate = { BaseValue = (&../../BatteryProducer/ToQuantity/BaseValue) / (&../../BatteryProducer/Interval); BuffType = yare.reactor_production_bonus; BuffMode = Divide; }
 
 			SuppliesResources = true
 
@@ -82,7 +99,7 @@ Part : <./data/ships/terran/base_part_terran.rules>/Part
 			Type = ResourceConverter
 
 			ToStorage = BatteryWires
-			ToQuantity = { BaseValue = ceil((&~/Part/BatteryPerSecond) * 1000 * (&../Interval)); BuffType=ElectronDebuff; BuffMode=Divide; } // Free energy probably!
+			ToQuantity = { BaseValue = ceil((&~/Part/BatteryPerSecond) * 1000 * (&../Interval)); BuffType = yare.reactor_production_bonus; BuffMode = Multiply; } // Free energy probably!
 			Interval = 1 / (&<./Data/cosmoteer.rules>/Simulation/PhysicsUpdatesPerSecond)
 		}
 
@@ -93,6 +110,7 @@ Part : <./data/ships/terran/base_part_terran.rules>/Part
 			OperationalToggle = ModeAdjToggle
 
 			BuffType = yar.E
+			BuffAmount = 0
 			IncludeInLightweightBlueprintUpdates = false
 
 			GridDistance = 1
