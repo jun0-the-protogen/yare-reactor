@@ -1,18 +1,18 @@
 Part : <t1.rules>/Part
 {
-	ID = yare.r_4_1x1
+	ID = yare.r_5_1x1
 
 	// TODO: Separate description keys
 
-	BatteryPerSecond = (&~/Part/^/0/BatteryPerSecond) * 8
-	TargetPrice = (&~/Part/^/0/TargetPrice) * 8
+	BatteryPerSecond = (&~/Part/^/0/BatteryPerSecond) * 16
+	TargetPrice = (&~/Part/^/0/TargetPrice) * 16
 
 	Resources
 	[
-		[steel, (&../../^/0/Resources/0/1) * 8]
-		[tristeel, (&<t3.rules>/Part/Resources/1/1) * 2]
-		[enriched_uranium, (&../../^/0/Resources/1/1) * 8]
-		[hyperium, 16]
+		[steel, (&../../^/0/Resources/0/1) * 16]
+		[tristeel, (&<t3.rules>/Part/Resources/1/1) * 4]
+		[enriched_uranium, (&../../^/0/Resources/1/1) * 16]
+		[hyperium, (&<t4.rules>/Part/Resources/3/1) * 2]
 		[coil, floor(((&~/Part/TargetPrice) - (&../0/1) * 25 - (&../1/1) * 200 - (&../2/1) * 2000 - (&../3/1) * 50) /2 / 100) @& @~1] // 100 per
 		[coil2, ceil(((&~/Part/TargetPrice) - (&../0/1) * 25 - (&../1/1) * 200 - (&../2/1) * 2000 - (&../3/1) * 50) /2 / 300)] // 300 per
 	]
@@ -23,7 +23,7 @@ Part : <t1.rules>/Part
 		{
 			ExpectedResourceGenerationRate = { BaseValue = (&../../BatteryProducer/^/0/ToQuantity/BaseValue) / (&../../BatteryProducer/^/0/Interval); BuffType=ElectronDebuff; BuffMode=Multiply; }
 
-			MaxResources = (&^/0/MaxResources) * 8
+			MaxResources = (&^/0/MaxResources) * 16
 			StartingResources = &MaxResources
 
 			MaxResourcesPickUp = (&^/0/MaxResourcesPickUp)
