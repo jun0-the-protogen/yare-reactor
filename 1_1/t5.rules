@@ -21,17 +21,17 @@ Part : <t1.rules>/Part
 	{
 		BatteryStorage : ^/0/BatteryStorage
 		{
-			ExpectedResourceGenerationRate = { BaseValue = (&../../BatteryProducer/^/0/ToQuantity/BaseValue) / (&../../BatteryProducer/^/0/Interval); BuffType=ElectronDebuff; BuffMode=Multiply; }
+			ExpectedResourceGenerationRate : ^/0/ExpectedResourceGenerationRate {BaseValue = (&../../BatteryProducer/^/0/ToQuantity/BaseValue) / (&../../BatteryProducer/^/0/Interval); }
 
 			MaxResources = (&^/0/MaxResources) * 16
 			StartingResources = &MaxResources
 
-			MaxResourcesPickUp = (&^/0/MaxResourcesPickUp)
+			MaxResourcesPickUp = (&^/0/MaxResourcesPickUp) * 8
 		}
 
 		BatteryProducer : ^/0/BatteryProducer
 		{
-			ToQuantity = { BaseValue = ceil((&~/Part/BatteryPerSecond) * 1000 * (&../Interval)); BuffType=ElectronDebuff; BuffMode=Divide; } // Free energy probably!
+			ToQuantity : ^/0/ToQuantity { BaseValue = ceil((&~/Part/BatteryPerSecond) * 1000 * (&../Interval)) }
 		}
 
 		DestroyedEffects : ^/0/DestroyedEffects
