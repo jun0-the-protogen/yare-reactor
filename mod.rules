@@ -50,12 +50,12 @@ Actions
 			&<1_1/t3.rules>/Part
 			&<1_1/t4.rules>/Part
 			&<1_1/t5.rules>/Part
-			//&<1_1/t6.rules>/Part
-			//&<1_1/t7.rules>/Part
-			//&<1_1/t8.rules>/Part
-			//&<1_1/t9.rules>/Part
-			//&<1_1/t10.rules>/Part
-			//
+			&<1_1/t6.rules>/Part
+			&<1_1/t7.rules>/Part
+			&<1_1/t8.rules>/Part
+			&<1_1/t9.rules>/Part
+			&<1_1/t10.rules>/Part
+
 			////2x1 reactors
 			//&<2_1/t1.rules>/Part
 			//&<2_1/t2.rules>/Part
