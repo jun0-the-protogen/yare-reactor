@@ -125,7 +125,6 @@ Part : <./data/ships/terran/base_part_terran.rules>/Part
 
 			OperationalToggle = ModeAreaToggle
 
-			BuffCenter = &~/Part/Center
 			BuffRadius = 5
 		}
 
